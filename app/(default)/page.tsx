@@ -10,6 +10,7 @@ import Features from "@/components/features";
 import Testimonials from "@/components/testimonials";
 import Cta from "@/components/cta";
 import Screens from "@/components/screens";
+import Navbar from "@/components/ui/navbar";
 
 export default function Home() {
   const cameras: { id: number; status: 'Active' | 'Inactive' | 'Alert'; feed: string }[] = [
@@ -23,13 +24,14 @@ export default function Home() {
 
   return (
     <>
+      <Navbar/>
       <PageIllustration />
       <Screens cameras={cameras} />
-      <Hero />
-      <Workflows />
-      <Features />
-      <Testimonials />
-      <Cta />
+      {/* <Hero /> */}
+      {/* <Workflows /> */}
+      {/* <Features /> */}
+      {/* <Testimonials /> */}
+      {/* <Cta /> */}
     </>
   );
 }
