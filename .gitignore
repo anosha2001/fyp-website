@@ -37,3 +37,10 @@ next-env.d.ts
 
 # contentlayer
 .contentlayer
+
+
+# amplify
+node_modules
+.amplify
+amplify_outputs*
+amplifyconfiguration*
