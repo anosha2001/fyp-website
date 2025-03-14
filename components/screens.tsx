@@ -88,7 +88,7 @@ export default function Screens({ cameras }: ScreensProps) {
     if (ws && ws.readyState === WebSocket.OPEN) {
       console.log("Sending camera feed via WebSocket...");
   
-      // Dynamically get the first active camera feed element
+      // Dynamically get the first active camera feed elements
       const activeCamera = cameras.find(camera => camera.status === 'Active');
       if (!activeCamera) {
         console.error("No active camera found.");
