@@ -54,7 +54,7 @@
 
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
 
 type CameraStatus = 'Active' | 'Inactive' | 'Alert';
 
@@ -64,6 +64,8 @@ type ScreensProps = {
 
 export default function Screens({ cameras }: ScreensProps) {
   const wsRef = useRef<WebSocket | null>(null);
+  const [alerts, setAlerts] = useState<{ id: string; message: string }[]>([]);
+  const [predictions, setPredictions] = useState<{ [key: string]: string }>({}); // Store predictions by camera ID
 
   useEffect(() => {
     // Initialize WebSocket
@@ -72,6 +74,19 @@ export default function Screens({ cameras }: ScreensProps) {
     wsRef.current.onopen = () => alert("WebSocket connected.");
     wsRef.current.onerror = (error) => console.error("WebSocket error:", error);
     wsRef.current.onclose = () => alert("WebSocket disconnected.");
+
+    // Listen for messages from the backend (alerts or predictions)
+    wsRef.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.alert) {
+        setAlerts((prev) => [...prev, { id: message.camera_id, message: message.alert }]); // Append new alert
+      } else if (message.predicted_label) {
+        setPredictions((prev) => ({
+          ...prev,
+          [message.camera_id]: message.predicted_label, // Store prediction per camera
+        }));
+      }
+    };
 
     // Start sending frames (simulating periodic frame sends) every 0.3 seconds for the first active camera
     const interval = setInterval(() => captureFrame(), 100); // 0.3s interval for frame capture
@@ -146,6 +161,7 @@ export default function Screens({ cameras }: ScreensProps) {
   const gridSize = Math.ceil(Math.sqrt(cameras.length)); // Dynamic grid size calculation
 
   return (
+    <div className="flex flex-col items-center">
     <section
       className={`grid gap-6 mx-auto py-12 my-8`}
       style={{
@@ -190,5 +206,26 @@ export default function Screens({ cameras }: ScreensProps) {
         </div>
       ))}
     </section>
+
+    {/* Alerts Section */}
+<div className="w-full max-w-3xl mt-8 p-4 rounded-lg shadow-lg bg-[#1a1d29] text-white">
+  <h2 className="text-xl font-bold text-red-500 text-center">Alerts</h2>
+  <div className="mt-2 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+    {alerts.length === 0 ? (
+      <p className="text-gray-400 text-center">No alerts detected</p>
+    ) : (
+      <ul className="space-y-2">
+        {alerts.map((alert, index) => (
+          <li key={index} className="p-3 rounded-md shadow-sm bg-[#2b2f3a]">
+            <span className="font-semibold text-yellow-400">Camera {alert.id}:</span> 
+            <span className="ml-2 text-gray-300">{alert.message}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</div>
+
+  </div>
   );
 }
