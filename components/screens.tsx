@@ -135,6 +135,7 @@ export default function Screens({ cameras }: ScreensProps) {
       // Draw the image onto the canvas
       context.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
   
+      ws.send(JSON.stringify({ camera_id: activeCamera.id }));
       // Convert canvas image to Blob (binary data)
       canvas.toBlob((blob) => {
         if (blob) {
