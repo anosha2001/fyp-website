@@ -118,6 +118,8 @@ export default function Screens({ cameras }: ScreensProps) {
           <div className="mt-2 max-h-24 overflow-y-auto">
             {alerts
               .filter((alert) => alert.id === camera.id)
+              .slice() // create a shallow copy
+              .reverse() // reverse to show latest first
               .map((alert, idx) => (
                 <div key={idx} className="text-red-600 font-semibold text-sm mb-1">
                   {alert.message}
